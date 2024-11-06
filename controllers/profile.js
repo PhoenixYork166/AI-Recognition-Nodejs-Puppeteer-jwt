@@ -1,6 +1,7 @@
 const { printDateTime } = require('../util/printDateTime');
+const db = require('../util/database');
 
-exports.handleProfileGet = (req, res, db) => {
+exports.handleProfileGet = (req, res) => {
     printDateTime();
 
     const { id } = req.params;
@@ -10,6 +11,7 @@ exports.handleProfileGet = (req, res, db) => {
     console.log(`\nreq.params.id:\n${id}\n`);
 
     const userId = parseInt(id, 10);
+
     if (isNaN(userId)) {
         return res.status(422).json({
             success: false,
@@ -42,7 +44,3 @@ exports.handleProfileGet = (req, res, db) => {
         );
     });
 };
-
-// module.exports = {
-//     handleProfileGet: handleProfileGet
-// };

@@ -160,12 +160,17 @@ exports.handleAgeApi = (req, res, next) => {
         res.status(200).json(data);
       })
       .catch(err => {
-        res.status(502).json({ error: `Unable to fetch API...`, details: err.toString() });
+        return res.status(502).json({ 
+          error: `Unable to fetch API...`, 
+          details: err.toString() 
+        });
       });
 };
 
 exports.handleImage = (req, res, next) => {
   printDateTime();
+  const requestHandlerName = `handleImage`;
+  console.log(`\nJust received an Image\nrequestHandlerName:\n${requestHandlerName}`);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -175,8 +180,6 @@ exports.handleImage = (req, res, next) => {
   }
 
   const { id } = req.body;
-
-  const requestHandlerName = `handleImage`;
 
   if (!id || typeof id !== 'number') {
     return res.status(400).json({
@@ -191,12 +194,26 @@ exports.handleImage = (req, res, next) => {
   .where('id', '=', id)
   .increment('entries', 1)
   .returning('entries')
-  .then(entries => {
-      console.log(`\nentries stored to DB: ${entries[0].entries}`);
+  .then((entries) => {
+      console.log(`\nentries stored to DB\n`);
+      console.log(entries, `\n`);
+
       // return updated entries for frontend
-      res.status(200).json(entries[0].entries);
+      return res.status(200).json({ 
+        success: true, 
+        status: { code: 200 }, 
+        entries: entries,
+        message: `Updated entries`
+      });
   })
-  .catch(err => res.status(400).json(`unable to get entries\n${err}`))
+  .catch((err) => {
+    return res.status(400).json({
+    success: false,
+    status: { code: 400 },
+    error: `Unable to update entries\n${err}`
+    })
+    }
+  );
 };
 
 

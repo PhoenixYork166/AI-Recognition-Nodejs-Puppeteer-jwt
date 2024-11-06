@@ -10,8 +10,6 @@ const corsSetup = require('./middleware/cors-setup');
 const db = require('./util/database');
 const fetch = require('node-fetch');
 
-const profile = require('./controllers/profile');
-
 const rootDir = require('./util/path');
 require('dotenv').config({ path: `${rootDir}/.env`});
 
@@ -19,6 +17,13 @@ const { printDateTime } = require('./util/printDateTime');
 // 2. Test PostgreSQL connection
 const { testDbConnection } = require('./util/testDbConnection');
 testDbConnection(db);
+
+/* importing Express routers */
+const authRoutes = require('./routes/authRoutes');
+const recordsRoutes = require('./routes/recordsRoutes');
+const imageRoutes = require('./routes/imagesRoutes');
+const webScrapRoutes = require('./routes/webScrapRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 
 const app = express(); 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -90,13 +95,6 @@ app.use(express.json());
 // ** Express Middleware for Logging HTTP Requests **
 app.use(logger);
 
-
-/* importing Express routers */
-const authRoutes = require('./routes/authRoutes');
-const recordsRoutes = require('./routes/records');
-const imageRoutes = require('./routes/images');
-const webScrapRoutes = require('./routes/webScrapRoute');
-
 /* User's auth routes for rootDir/controllers/authen */
 app.use(authRoutes);
 
@@ -108,6 +106,10 @@ app.use(imageRoutes);
 
 /* Web Scraper routes for rootDir/controllers/webScrap */
 app.use(webScrapRoutes);
+
+/* Profile routes for rootDir/controllers/profile */
+app.use(profileRoutes);
+
 
 // create /profile/:id route
 // app.post('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) } );
